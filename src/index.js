@@ -9,12 +9,14 @@ import "assets/demo/demo.css";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 
 import AdminLayout from "layouts/Admin.jsx";
+import Login from "views/login.jsx"
 
 const hist = createBrowserHistory();
 
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
+      <Route exact path="/" component={Login} />
       <Route path="/admin" render={props => <AdminLayout {...props} />} />
       <Redirect to="/admin/dashboard" />
     </Switch>
