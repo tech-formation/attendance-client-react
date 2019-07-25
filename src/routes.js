@@ -1,6 +1,7 @@
 import Dashboard from "views/Dashboard.jsx";
-import TableList from "views/Tables.jsx";
+import AddCompany from "views/Companies/AddCompany.jsx";
 import UserPage from "views/User.jsx";
+import  Companies from "views/Companies/Companies.jsx"
 
 
 var routes = [
@@ -19,10 +20,17 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: "/tables",
-    name: "Table",
+    path: "/add-commpany",
+    name: "Add Company",
     icon: "nc-icon nc-tile-56",
-    component: TableList,
+    component: AddCompany,
+    layout: "/admin"
+  },
+  {
+    path: "/companies",
+    name: "Companies",
+    icon: "nc-icon nc-tile-56",
+    component: Companies,
     layout: "/admin"
   }
 ];

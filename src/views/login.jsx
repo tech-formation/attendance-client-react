@@ -32,14 +32,16 @@ class Login extends Component {
   handleSubmit = e => {
     e.preventDefault();
     this.setState({ is_submit: true });
-
+    let redirect = this.props;
     axios
       .post(USER_LOGIN, {
         email: this.state.email,
         password: this.state.password
       })
       .then(function(response) {
-        console.log(response.data.token);
+         // console.log(response.data.token)
+        redirect.history.push("/admin/companies")
+        
       })
       .catch(function(error) {
         console.log(error);
