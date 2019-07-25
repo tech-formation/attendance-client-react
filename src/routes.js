@@ -1,7 +1,7 @@
 import Dashboard from "views/Dashboard.jsx";
-import AddCompany from "views/Companies/AddCompany.jsx";
+import AddCompany from "views/Companies/AddCompany";
 import UserPage from "views/User.jsx";
-import  Companies from "views/Companies/Companies.jsx"
+import  Companies from "views/Companies/Companies"
 
 
 var routes = [
