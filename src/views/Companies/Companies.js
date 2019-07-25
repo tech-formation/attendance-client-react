@@ -1,12 +1,10 @@
 import React from "react";
 import { GET_COMPANIES } from "config/endpoints";
 import axios from "axios";
-import TableRow from "views/Companies/TableRow";
 
 // reactstrap components
 import {
   Card,
-  CardHeader,
   CardBody,
   CardTitle,
   Table,
@@ -50,9 +48,24 @@ class Companies extends React.Component {
       });
   };
 
-  tabRow() {
+  tableData() {
     return this.state.companies.map((object, i) => {
-      return <TableRow obj={object} key={i} />;
+        
+           return(
+               <tr key={object.id}> 
+                 <td >{object.id}</td>
+                 <td>{object.email}</td>
+                 <td>{object.address}</td>
+                 <td>{object.city}</td>
+                 <td>{object.pincode}</td>
+                 <td>
+                    <button className="btn btn-sm">Edit</button> &nbsp;
+                    <button className="btn btn-sm">Delete</button>
+                 </td>
+               </tr>
+           ) 
+                  ;
+            
     });
   }
 
@@ -173,7 +186,7 @@ class Companies extends React.Component {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="text-center">{this.tabRow()}</tbody>
+                    <tbody className="text-center">{this.tableData()}</tbody>
                   </Table>
                   <ul className="pagination">
                     <li className="page-item">
