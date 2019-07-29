@@ -8,8 +8,8 @@ import DemoNavbar from "components/Navbars/DemoNavbar.jsx";
 import Footer from "components/Footer/Footer.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
 
-
-import routes from "routes.js";
+import ContentMapping from "config/mapping.js";
+import routes from "routes/routes.js";
 
 var ps;
 
@@ -57,17 +57,7 @@ class Dashboard extends React.Component {
         />
         <div className="main-panel" ref={this.mainPanel}>
           <DemoNavbar {...this.props} />
-          <Switch>
-            {routes.map((prop, key) => {
-              return (
-                <Route
-                  path={prop.layout + prop.path}
-                  component={prop.component}
-                  key={key}
-                />
-              );
-            })}
-          </Switch>
+          <ContentMapping />
           <Footer fluid />
         </div>
        
