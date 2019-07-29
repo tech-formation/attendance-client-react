@@ -1,5 +1,5 @@
 import React from "react";
-import { REGISTER_COMPANY } from "config/endpoints.js";
+import { REGISTER_COMPANY, EDIT_COMPANY } from "config/endpoints.js";
 import axios from "axios";
 import states from "config/constants/states";
 
@@ -44,6 +44,46 @@ class User extends React.Component {
     is_submit: false
   };
 
+  /**
+   * before rendering the component
+   */
+  componentWillMount() {
+    const { match } = this.props;
+    const id = match.params.id;
+    this.getCompany(id);
+    this.checkCompanyId();
+  }
+
+  getCompany = prop => {
+    axios
+      .get(EDIT_COMPANY + prop)
+      .then(Response => Response)
+      .then(findresponse => {
+        console.log(findresponse);
+        this.setState({
+          name: findresponse.data.data[0].name,
+          email: findresponse.data.data[0].email,
+          from_email: findresponse.data.data[0].from_email,
+          city: findresponse.data.data[0].city,
+          state_id: findresponse.data.data[0].state_id,
+          pincode: findresponse.data.data[0].pincode,
+          address: findresponse.data.data[0].address,
+          attendace_radius: findresponse.data.data[0].attendace_radius,
+          longitude: findresponse.data.data[0].longitude,
+          lattitude: findresponse.data.data[0].lattitude,
+          weekly_off_pattern: findresponse.data.data[0].weekly_off_pattern,
+          firstname: findresponse.data.data[0].firstname,
+          lastname: findresponse.data.data[0].lastname,
+          password: findresponse.data.data[0].password,
+          gender: findresponse.data.data[0].gender,
+          response: findresponse.data.data[0].response
+        });
+      })
+      .catch(error => {
+        console.log("Error fetching and parsing data", error);
+      });
+  };
+
   // form validations
   getValidationsErrors() {
     const {
@@ -64,7 +104,7 @@ class User extends React.Component {
       password,
       gender
     } = this.state;
-     let response = 0;
+    let response = 0;
     const error_name = is_submit && !name ? "This field is required" : null;
     const error_email = is_submit && !email ? "This field is required" : null;
     const error_from_email =
@@ -115,12 +155,38 @@ class User extends React.Component {
     console.log(data);
     axios
       .post(REGISTER_COMPANY, data)
-      .then((res) => {
+      .then(res => {
+        this.setState({
+          response: res.data.status
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }
 
-          this.setState({
-            response: res.data.status
-          }); 
+  // update Company
+  updateCompany() {
+    const id = this.props.match.params.id;
+    const data = new FormData();
+    data.append("name", this.state.name);
+    data.append("email", this.state.email);
+    data.append("from_email", this.state.from_email);
+    data.append("city", this.state.city);
+    data.append("state_id", this.state.state_id);
+    data.append("pincode", this.state.pincode);
+    data.append("address", this.state.address);
+    data.append("attendace_radius", this.state.attendace_radius);
+    data.append("weekly_off_pattern", this.state.weekly_off_pattern);
+    data.append("longitude", this.state.longitude);
+    data.append("lattitude", this.state.lattitude);
 
+    axios
+      .post(EDIT_COMPANY + id, data)
+      .then(res => {
+        this.setState({
+          response: res.data.status
+        });
       })
       .catch(function(error) {
         console.log(error);
@@ -134,8 +200,22 @@ class User extends React.Component {
       match: { params }
     } = this.props;
     this.setState({ is_submit: true });
-    this.saveCompany();
+    console.log(this.props.match.params.id);
+    if (typeof this.props.match.params.id == "undefined") {
+      this.saveCompany();
+    } else {
+      this.updateCompany();
+    }
   };
+
+  checkCompanyId = () => {
+    let id;
+    typeof this.props.match.params.id == "undefined"
+      ? (id = " ")
+      : (id = this.props.match.params.id);
+    return id;
+  };
+  checkCompanyId;
 
   render() {
     const {
@@ -171,16 +251,17 @@ class User extends React.Component {
 
     switch (this.state.response) {
       case 1:
-        alert = <div className="alert alert-success"> Record added successfully!</div>
+        alert = (
+          <div className="alert alert-success"> Record added successfully!</div>
+        );
         window.scrollTo(0, 0);
-        window.location.reload();
         break;
       case 0:
-        alert = <div className="alert alert-danger">Unable to save!</div>
+        alert = <div className="alert alert-danger">Unable to save!</div>;
         window.scrollTo(0, 0);
         break;
       default:
-      alert = " ";
+        alert = " ";
     }
 
     return (
@@ -385,95 +466,101 @@ class User extends React.Component {
                       </Col>
                     </Row>
 
-                    <CardHeader>
-                      <CardTitle tag="h5">Primary User Details</CardTitle>
-                    </CardHeader>
+                    {this.checkCompanyId() == " " ? (
+                      <>
+                        <CardHeader>
+                          <CardTitle tag="h5">Primary User Details</CardTitle>
+                        </CardHeader>
 
-                    <Row>
-                      <Col className="pr-1" md="4">
-                        <FormGroup>
-                          <label>Email</label>
-                          <Input
-                            placeholder="Enter Email"
-                            type="email"
-                            onChange={e =>
-                              this.setState({ email: e.target.value })
-                            }
-                            invalid={error_pincode ? true : false}
-                            value={email}
-                          />
-                          <FormFeedback>{error_pincode}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                      <Col className="px-1" md="4">
-                        <FormGroup>
-                          <label>Password</label>
-                          <Input
-                            placeholder="Enter Password"
-                            type="password"
-                            onChange={e =>
-                              this.setState({
-                                password: e.target.value
-                              })
-                            }
-                            value={password}
-                            name="password"
-                          />
-                          <FormFeedback>{error_password}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                      <Col className="pl-1" md="4">
-                        <FormGroup>
-                          <label>Enter First Name</label>
-                          <Input
-                            placeholder="Enter First Name"
-                            type="text"
-                            onChange={e =>
-                              this.setState({
-                                firstname: e.target.value
-                              })
-                            }
-                            value={firstname}
-                            name="firstname"
-                          />
-                          <FormFeedback>{error_firstname}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                        <Row>
+                          <Col className="pr-1" md="4">
+                            <FormGroup>
+                              <label>Email</label>
+                              <Input
+                                placeholder="Enter Email"
+                                type="email"
+                                onChange={e =>
+                                  this.setState({ email: e.target.value })
+                                }
+                                invalid={error_pincode ? true : false}
+                                value={email}
+                              />
+                              <FormFeedback>{error_pincode}</FormFeedback>
+                            </FormGroup>
+                          </Col>
+                          <Col className="px-1" md="4">
+                            <FormGroup>
+                              <label>Password</label>
+                              <Input
+                                placeholder="Enter Password"
+                                type="password"
+                                onChange={e =>
+                                  this.setState({
+                                    password: e.target.value
+                                  })
+                                }
+                                value={password}
+                                name="password"
+                              />
+                              <FormFeedback>{error_password}</FormFeedback>
+                            </FormGroup>
+                          </Col>
+                          <Col className="pl-1" md="4">
+                            <FormGroup>
+                              <label>Enter First Name</label>
+                              <Input
+                                placeholder="Enter First Name"
+                                type="text"
+                                onChange={e =>
+                                  this.setState({
+                                    firstname: e.target.value
+                                  })
+                                }
+                                value={firstname}
+                                name="firstname"
+                              />
+                              <FormFeedback>{error_firstname}</FormFeedback>
+                            </FormGroup>
+                          </Col>
+                        </Row>
 
-                    <Row>
-                      <Col className="pr-1" md="4">
-                        <FormGroup>
-                          <label>Last Name</label>
-                          <Input
-                            placeholder="Enter Last Name"
-                            type="text"
-                            onChange={e =>
-                              this.setState({ lastname: e.target.value })
-                            }
-                            invalid={error_lastname ? true : false}
-                            value={lastname}
-                            name="lastname"
-                          />
-                          <FormFeedback>{error_lastname}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                      <Col className="px-1" md="4">
-                        <FormGroup>
-                          <label>Gender</label>
+                        <Row>
+                          <Col className="pr-1" md="4">
+                            <FormGroup>
+                              <label>Last Name</label>
+                              <Input
+                                placeholder="Enter Last Name"
+                                type="text"
+                                onChange={e =>
+                                  this.setState({ lastname: e.target.value })
+                                }
+                                invalid={error_lastname ? true : false}
+                                value={lastname}
+                                name="lastname"
+                              />
+                              <FormFeedback>{error_lastname}</FormFeedback>
+                            </FormGroup>
+                          </Col>
+                          <Col className="px-1" md="4">
+                            <FormGroup>
+                              <label>Gender</label>
 
-                          <select
-                            className="form-control"
-                            onChange={e =>
-                              this.setState({ gender: e.target.value })
-                            }
-                          >
-                            <option value="1">Male</option>
-                            <option value="2">Female</option>
-                          </select>
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                              <select
+                                className="form-control"
+                                onChange={e =>
+                                  this.setState({ gender: e.target.value })
+                                }
+                              >
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                              </select>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </>
+                    ) : (
+                      "   "
+                    )}
 
                     <Row>
                       <div className="update ml-auto mr-auto">
@@ -482,7 +569,9 @@ class User extends React.Component {
                           color="primary"
                           type="submit"
                         >
-                          Add Company
+                          {this.checkCompanyId() == " "
+                            ? "Add Company"
+                            : "Update Company"}
                         </Button>
                       </div>
                     </Row>

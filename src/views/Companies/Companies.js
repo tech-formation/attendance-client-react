@@ -1,6 +1,8 @@
 import React from "react";
-import { GET_COMPANIES } from "config/endpoints";
+import { GET_COMPANIES ,DELETE_COMPANY } from "config/endpoints";
 import axios from "axios";
+import {Link} from "react-router-dom";
+
 
 // reactstrap components
 import {
@@ -48,6 +50,22 @@ class Companies extends React.Component {
       });
   };
 
+  handleDelete = (id) => {
+    let redirect = this.props;
+    axios
+    .delete(DELETE_COMPANY + `${id}`)
+    .then(Response => Response)
+    .then(findresponse => {
+      let url = `${GET_COMPANIES}`;
+      this.getCompanies(url);
+      redirect.history.push("/admin/companies");
+    })
+    .catch(error => {
+      console.log("Error fetching and parsing data", error);
+    });
+   
+  }
+
   tableData() {
     return this.state.companies.map((object, i) => {
         
@@ -59,8 +77,8 @@ class Companies extends React.Component {
                  <td>{object.city}</td>
                  <td>{object.pincode}</td>
                  <td>
-                    <button className="btn btn-sm">Edit</button> &nbsp;
-                    <button className="btn btn-sm">Delete</button>
+                 <Link className="btn btn-sm" to={`/admin/company/edit/${object.id}`}>Edit</Link> &nbsp;
+                    <button className="btn btn-sm" onClick={() => this.handleDelete(object.id) }>Delete</button>
                  </td>
                </tr>
            ) 
@@ -166,6 +184,14 @@ class Companies extends React.Component {
                         <option value="city">City</option>
                       </select>
                     </div>
+                  </Col>
+                  <Col md="2">
+                  <label style={{ "visibility" : "hidden" }}>Sort By</label>
+                  <Link  to={`/admin/company/Add`}>
+                  <Button  value="Search" className="mt-0 p-2">
+                     Add Company
+                  </Button>
+                  </Link>
                   </Col>
                 </Row>
 

@@ -1,5 +1,4 @@
 import Dashboard from "views/Dashboard.jsx";
-import AddCompany from "views/Companies/AddCompany";
 import UserPage from "views/User.jsx";
 import  Companies from "views/Companies/Companies"
 
@@ -20,18 +19,11 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: "/add-commpany",
-    name: "Add Company",
-    icon: "nc-icon nc-tile-56",
-    component: AddCompany,
-    layout: "/admin"
-  },
-  {
     path: "/companies",
     name: "Companies",
     icon: "nc-icon nc-tile-56",
     component: Companies,
     layout: "/admin"
-  }
+  },
 ];
 export default routes;
