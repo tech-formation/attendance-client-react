@@ -22,3 +22,6 @@ yarn-error.log*
 
 /.history
 package-lock.json
+*.suo
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite

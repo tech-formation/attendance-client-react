@@ -1,19 +1,11 @@
 import React from "react";
-import { GET_COMPANIES ,DELETE_COMPANY } from "config/endpoints";
+import { GET_COMPANIES, DELETE_COMPANY } from "config/endpoints";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 // reactstrap components
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  Table,
-  Row,
-  Col,
-  Button
-} from "reactstrap";
+import { Card, CardBody, CardTitle, Table, Row, Col, Button } from "reactstrap";
 
 class Companies extends React.Component {
   constructor(props) {
@@ -35,8 +27,9 @@ class Companies extends React.Component {
   }
 
   getCompanies = prop => {
+    let userToken = localStorage.getItem("token");
     axios
-      .get(prop)
+      .get(prop, { headers: { Authorization: `Bearer ${userToken}` } })
       .then(Response => Response)
       .then(findresponse => {
         this.setState({
@@ -50,40 +43,50 @@ class Companies extends React.Component {
       });
   };
 
-  handleDelete = (id) => {
+  handleDelete = id => {
     let redirect = this.props;
+    let userToken = localStorage.getItem("token");
     axios
-    .delete(DELETE_COMPANY + `${id}`)
-    .then(Response => Response)
-    .then(findresponse => {
-      let url = `${GET_COMPANIES}`;
-      this.getCompanies(url);
-      redirect.history.push("/admin/companies");
-    })
-    .catch(error => {
-      console.log("Error fetching and parsing data", error);
-    });
-   
-  }
+      .delete(DELETE_COMPANY + `${id}`, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      })
+      .then(Response => Response)
+      .then(findresponse => {
+        let url = `${GET_COMPANIES}`;
+        this.getCompanies(url);
+        redirect.history.push("/admin/companies");
+      })
+      .catch(error => {
+        console.log("Error fetching and parsing data", error);
+      });
+  };
 
   tableData() {
     return this.state.companies.map((object, i) => {
-        
-           return(
-               <tr key={object.id}> 
-                 <td >{object.id}</td>
-                 <td>{object.email}</td>
-                 <td>{object.address}</td>
-                 <td>{object.city}</td>
-                 <td>{object.pincode}</td>
-                 <td>
-                 <Link className="btn btn-sm" to={`/admin/company/edit/${object.id}`}>Edit</Link> &nbsp;
-                    <button className="btn btn-sm" onClick={() => this.handleDelete(object.id) }>Delete</button>
-                 </td>
-               </tr>
-           ) 
-                  ;
-            
+      return (
+        <tr key={object.id}>
+          <td>{object.id}</td>
+          <td>{object.email}</td>
+          <td>{object.address}</td>
+          <td>{object.city}</td>
+          <td>{object.pincode}</td>
+          <td>
+            <Link
+              className="btn btn-sm"
+              to={`/admin/company/edit/${object.id}`}
+            >
+              Edit
+            </Link>
+            &nbsp;
+            <button
+              className="btn btn-sm"
+              onClick={() => this.handleDelete(object.id)}
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      );
     });
   }
 
@@ -186,12 +189,12 @@ class Companies extends React.Component {
                     </div>
                   </Col>
                   <Col md="2">
-                  <label style={{ "visibility" : "hidden" }}>Sort By</label>
-                  <Link  to={`/admin/company/Add`}>
-                  <Button  value="Search" className="mt-0 p-2">
-                     Add Company
-                  </Button>
-                  </Link>
+                    <label style={{ visibility: "hidden" }}>Sort By</label>
+                    <Link to={`/admin/company/Add`}>
+                      <Button value="Search" className="mt-0 p-2">
+                        Add Company
+                      </Button>
+                    </Link>
                   </Col>
                 </Row>
 

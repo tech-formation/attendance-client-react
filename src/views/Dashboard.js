@@ -17,7 +17,7 @@ import {
   dashboard24HoursPerformanceChart,
   dashboardEmailStatisticsChart,
   dashboardNASDAQChart
-} from "variables/charts.jsx";
+} from "variables/charts";
 
 class AddCompany extends React.Component {
   render() {
