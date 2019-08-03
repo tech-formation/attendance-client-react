@@ -1,4 +1,13 @@
 import React, { Component } from "react";
+import { USER_LOGIN } from "config/endpoints.js";
+import axios from "axios";
+import { connect } from "react-redux";
+import { setUser } from "modules/Users/actions";
+import { func } from "prop-types";
+import { Breadcrumb, BreadcrumbItem } from "reactstrap";
+
+import { Link } from "react-router-dom";
+
 import {
   Button,
   Card,
@@ -13,18 +22,26 @@ import {
   FormFeedback
 } from "reactstrap";
 
-import { USER_LOGIN } from "config/endpoints.js";
-import axios from "axios";
-
 class Login extends Component {
   constructor(props) {
     super(props);
+  }
 
-    this.state = {
-      email: "",
-      password: "",
-      is_submit: false
-    };
+  state = {
+    email: "",
+    password: "",
+    is_submit: false,
+    emessage: false
+  };
+  componentDidMount() {
+    //check login
+    let userToken = localStorage.getItem("token");
+   
+    if (userToken === null) {
+      this.props.history.push("/login");
+    } else {
+      this.props.history.push("/admin/companies");
+    }
   }
 
   /*   Form Submit */
@@ -38,12 +55,16 @@ class Login extends Component {
         email: this.state.email,
         password: this.state.password
       })
-      .then(function(response) {
-         // console.log(response.data.token)
-        redirect.history.push("/admin/companies")
-        
+      .then(response => {
+        if (response.data.status === 1) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user" , JSON.stringify(response.data.user));
+          redirect.history.push("/admin/companies");
+        } else {
+          this.setState({ emessage: true });
+        }
       })
-      .catch(function(error) {
+      .catch(error => {
         console.log(error);
       });
   };
@@ -63,18 +84,27 @@ class Login extends Component {
   }
 
   render() {
-    const { email, password } = this.state;
-
+    const { email, password, emessage } = this.state;
     const { error_email, error_password } = this.getValidationsErrors();
-
+    const messageAlert = (
+      <div class="alert alert-danger" role="alert">
+        Invalid username and password!
+      </div>
+    );
     return (
       <>
         <div className="content bg-light" style={{ overflow: "hidden" }}>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <Link to={`/home`}>Home</Link>
+            </BreadcrumbItem>
+          </Breadcrumb>
           <Row
             className="d-flex align-items-center "
             style={{ height: 100 + "vh" }}
           >
             <Col md="4 offset-md-4">
+              {this.state.emessage === true ? messageAlert : " "}
               <Card className="card-user">
                 <CardHeader>
                   <CardTitle tag="h5" className="text-center">
@@ -145,4 +175,13 @@ class Login extends Component {
   }
 }
 
-export default Login;
+Login.propTypes = {
+  setUser: func.isRequired
+};
+
+export default connect(
+  null,
+  {
+    setUser
+  }
+)(Login);

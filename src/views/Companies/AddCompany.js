@@ -55,11 +55,13 @@ class User extends React.Component {
   }
 
   getCompany = prop => {
+    let userToken = localStorage.getItem("token");
     axios
-      .get(EDIT_COMPANY + prop)
+      .get(EDIT_COMPANY + prop, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      })
       .then(Response => Response)
       .then(findresponse => {
-        console.log(findresponse);
         this.setState({
           name: findresponse.data.data[0].name,
           email: findresponse.data.data[0].email,
@@ -152,9 +154,11 @@ class User extends React.Component {
   // Save Data Method
   saveCompany() {
     let data = this.state;
-    console.log(data);
+    let userToken = localStorage.getItem("token");
     axios
-      .post(REGISTER_COMPANY, data)
+      .post(REGISTER_COMPANY, data, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      })
       .then(res => {
         this.setState({
           response: res.data.status
@@ -180,9 +184,11 @@ class User extends React.Component {
     data.append("weekly_off_pattern", this.state.weekly_off_pattern);
     data.append("longitude", this.state.longitude);
     data.append("lattitude", this.state.lattitude);
-
+    let userToken = localStorage.getItem("token");
     axios
-      .post(EDIT_COMPANY + id, data)
+      .post(EDIT_COMPANY + id, data, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      })
       .then(res => {
         this.setState({
           response: res.data.status

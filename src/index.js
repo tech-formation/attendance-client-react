@@ -1,25 +1,38 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch ,Redirect} from "react-router-dom";
+import { Provider } from "react-redux";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "assets/scss/paper-dashboard.scss?v=1.1.0";
 import "assets/demo/demo.css";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
+import store from "config/store";
 
-import AdminLayout from "layouts/Admin.jsx";
-import Login from "views/login"
+import AdminLayout from "layouts/Admin";
+import Home from "views/Home";
+import Login from "views/Users/login"
 
 const hist = createBrowserHistory();
 
+
 ReactDOM.render(
-  <Router history={hist}>
+  <Provider store={store}>  
+    <Router history={hist}>
     <Switch>
-      <Route exact path="/" component={Login} />
-      <Route path="/admin" render={props => <AdminLayout {...props} />} />
-      <Redirect to="/admin/dashboard" />
+      <Route path="/admin/*" render={ (props) => (
+        localStorage.getItem("token") ? (
+          <AdminLayout {...props} />
+      ) : (
+        <Redirect to="/login" />
+      )
+      )} />
+      <Route path="/home" component={Home} />
+      <Route path="*" component={Login} />
     </Switch>
-  </Router>,
+  </Router>
+  </Provider>
+  ,
   document.getElementById("root")
 );

@@ -1,31 +1,27 @@
 import React from "react";
 import { Switch } from "react-router-dom";
-import routes from "routes/routes.js";
-import internalroutes from "routes/internalroute.js";
-import PrivateRoute from "config/PrivateRoute.js";
+import sidebar from "config/sidebar";
+import routes from "routes/routes";
+import PrivateRoute from "config/PrivateRoute";
 
 class ContentMapping extends React.Component {
   render() {
     return (
       <Switch>
-        {routes.map((prop, key) => {
-          return (
+        {
+          routes.map((prop , key) => {
+            return (
             <PrivateRoute
               path={prop.layout + prop.path}
               component={prop.component}
               key={key}
             />
           );
-        })}
-        {internalroutes.map((prop, key) => {
-          return (
-            <PrivateRoute
-              path={prop.layout + prop.path}
-              component={prop.component}
-              key={key}
-            />
-          );
-        })}
+               
+          })
+          
+        }
+      
       </Switch>
     );
   }
