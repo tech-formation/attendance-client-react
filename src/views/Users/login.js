@@ -58,7 +58,6 @@ class Login extends Component {
       .then(response => {
         if (response.data.status === 1) {
           localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user" , JSON.stringify(response.data.user));
           redirect.history.push("/admin/companies");
         } else {
           this.setState({ emessage: true });
