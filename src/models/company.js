@@ -1,5 +1,6 @@
 import axios from "axios";
 import { GET_COMPANIES } from "config/endpoints";
+import { serverValidations } from "config/validation";
 
 /**
  *  Get Companies
@@ -39,7 +40,7 @@ export const handleDelete = (thisPar, thisProps, url, id) => {
       headers: { Authorization: `Bearer ${userToken}` }
     })
     .then(Response => {
-      getCompanies(thisPar, thisProps, GET_COMPANIES);
+      getCompanies(thisPar, GET_COMPANIES);
       thisProps.history.push("/admin/companies");
     })
     .catch(error => {
@@ -53,7 +54,7 @@ export const handleDelete = (thisPar, thisProps, url, id) => {
  * @param {*} thisState = this.state
  * @param {*} url = url
  */
-export const saveCompany = (thisPar, thisState, url) => {
+export const saveCompany = (thisPar, thisState, url, fromFields) => {
   let data = thisState;
   let userToken = localStorage.getItem("token");
   axios
@@ -64,6 +65,7 @@ export const saveCompany = (thisPar, thisState, url) => {
       thisPar.setState({
         response: res.data.status
       });
+      serverValidations(res.data.message, fromFields, thisState);
     })
     .catch(function(error) {
       console.log(error);
@@ -116,7 +118,13 @@ export const getCompany = (thisPar, id, url) => {
  * @param {*} thisState = this.state
  */
 
-export const updateCompany = (thisPar, url, thisProp, thisState) => {
+export const updateCompany = (
+  thisPar,
+  url,
+  thisProp,
+  thisState,
+  fromFields
+) => {
   let userToken = localStorage.getItem("token");
 
   const id = thisProp.match.params.id;
@@ -141,6 +149,7 @@ export const updateCompany = (thisPar, url, thisProp, thisState) => {
       thisPar.setState({
         response: res.data.status
       });
+      serverValidations(res.data.message, fromFields);
     })
     .catch(function(error) {
       console.log(error);

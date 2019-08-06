@@ -2,6 +2,7 @@ import React from "react";
 import { REGISTER_COMPANY, EDIT_COMPANY } from "config/endpoints.js";
 import states from "config/constants/states";
 import { saveCompany  , getCompany , updateCompany} from "models/company";
+import { validations } from "config/validation";
 
 // reactstrap components
 import {
@@ -14,8 +15,7 @@ import {
   Form,
   Input,
   Row,
-  Col,
-  FormFeedback
+  Col
 } from "reactstrap";
 
 class User extends React.Component {
@@ -50,93 +50,27 @@ class User extends React.Component {
   componentWillMount() {
     const { match } = this.props;
     const id = match.params.id;
-    getCompany(this, id , EDIT_COMPANY);
+    getCompany(this, id, EDIT_COMPANY);
     this.checkCompanyId();
   }
-
- 
-
-  // form validations
-  getValidationsErrors() {
-    const {
-      is_submit,
-      name,
-      email,
-      from_email,
-      city,
-      state_id,
-      pincode,
-      address,
-      attendace_radius,
-      longitude,
-      lattitude,
-      weekly_off_pattern,
-      firstname,
-      lastname,
-      password,
-      gender
-    } = this.state;
-    let response = 0;
-    const error_name = is_submit && !name ? "This field is required" : null;
-    const error_email = is_submit && !email ? "This field is required" : null;
-    const error_from_email =
-      is_submit && !from_email ? "This field is required" : null;
-    const error_city = is_submit && !city ? "This field is required" : null;
-    const error_state_id =
-      is_submit && !state_id ? "This field is required" : null;
-    const error_pincode =
-      is_submit && !pincode ? "This field is required" : null;
-    const error_address =
-      is_submit && !address ? "This field is required" : null;
-    const error_attendace_radius =
-      is_submit && !attendace_radius ? "This field is required" : null;
-    const error_longitude =
-      is_submit && !longitude ? "This field is required" : null;
-    const error_lattitude =
-      is_submit && !lattitude ? "This field is required" : null;
-    const error_weekly_off_pattern =
-      is_submit && !weekly_off_pattern ? "This field is required" : null;
-    const error_firstname =
-      is_submit && !firstname ? "This field is required" : null;
-    const error_lastname =
-      is_submit && !lastname ? "This field is required" : null;
-    const error_password =
-      is_submit && !password ? "This field is required" : null;
-
-    return {
-      error_name,
-      error_email,
-      error_from_email,
-      error_city,
-      error_state_id,
-      error_pincode,
-      error_address,
-      error_attendace_radius,
-      error_longitude,
-      error_lattitude,
-      error_weekly_off_pattern,
-      error_firstname,
-      error_lastname,
-      error_password
-    };
-  }
-
 
   // handle submit
   handleSubmit = e => {
     e.preventDefault();
+    let formFields = e.target.elements;
     const {
       match: { params }
     } = this.props;
     this.setState({ is_submit: true });
-    console.log(this.props.match.params.id);
-    if (typeof this.props.match.params.id == "undefined") {
-      saveCompany(this , this.state , REGISTER_COMPANY);
-    } else {
-      updateCompany(this , EDIT_COMPANY , this.props , this.state);
+    if (validations(e) === true) {
+      if (typeof this.props.match.params.id == "undefined") {
+        saveCompany(this, this.state, REGISTER_COMPANY, formFields);
+      } else {
+        updateCompany(this, EDIT_COMPANY, this.props, this.state, formFields);
+      }
     }
   };
-  
+
   checkCompanyId = () => {
     let id;
     typeof this.props.match.params.id == "undefined"
@@ -163,18 +97,6 @@ class User extends React.Component {
       lastname,
       password
     } = this.state;
-
-    const {
-      error_name,
-      error_email,
-      error_city,
-      error_state_id,
-      error_pincode,
-      error_address,
-      error_password,
-      error_firstname,
-      error_lastname
-    } = this.getValidationsErrors();
 
     let alert;
 
@@ -217,11 +139,10 @@ class User extends React.Component {
                             onChange={e =>
                               this.setState({ name: e.target.value })
                             }
-                            invalid={error_name ? true : false}
                             value={name}
                             name="name"
+                            className="is_required"
                           />
-                          <FormFeedback>{error_name}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col className="px-1" md="4">
@@ -233,11 +154,9 @@ class User extends React.Component {
                             onChange={e =>
                               this.setState({ email: e.target.value })
                             }
-                            invalid={error_email ? true : false}
                             value={email}
                             name="email"
                           />
-                          <FormFeedback>{error_email}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col className="pl-1" md="4">
@@ -261,16 +180,15 @@ class User extends React.Component {
                         <FormGroup>
                           <label>Address</label>
                           <Input
+                            className="is_required"
                             placeholder="Enter Address"
                             type="text"
                             onChange={e =>
                               this.setState({ address: e.target.value })
                             }
-                            invalid={error_address ? true : false}
                             value={address}
                             name="address"
                           />
-                          <FormFeedback>{error_address}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col className="px-1" md="4">
@@ -278,15 +196,14 @@ class User extends React.Component {
                           <label>City</label>
                           <Input
                             placeholder="Enter City"
+                            className="is_required"
                             type="text"
                             onChange={e =>
                               this.setState({ city: e.target.value })
                             }
-                            invalid={error_city ? true : false}
                             value={city}
                             name="city"
                           />
-                          <FormFeedback>{error_city}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col className="pl-1" md="4">
@@ -294,7 +211,8 @@ class User extends React.Component {
                           <label>State</label>
 
                           <select
-                            className="form-control"
+                            className="form-control is_required"
+                            name="state_id"
                             onChange={e =>
                               this.setState({ state_id: e.target.value })
                             }
@@ -308,7 +226,6 @@ class User extends React.Component {
                               </option>
                             ))}
                           </select>
-                          <FormFeedback>{error_state_id}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -319,15 +236,14 @@ class User extends React.Component {
                           <label>Pincode</label>
                           <Input
                             placeholder="Enter Pincode"
+                            className="is_required"
                             type="text"
                             onChange={e =>
                               this.setState({ pincode: e.target.value })
                             }
-                            invalid={error_pincode ? true : false}
                             value={pincode}
                             name="pincode"
                           />
-                          <FormFeedback>{error_pincode}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col className="px-1" md="4">
@@ -411,16 +327,15 @@ class User extends React.Component {
                                 onChange={e =>
                                   this.setState({ email: e.target.value })
                                 }
-                                invalid={error_pincode ? true : false}
                                 value={email}
                               />
-                              <FormFeedback>{error_pincode}</FormFeedback>
                             </FormGroup>
                           </Col>
                           <Col className="px-1" md="4">
                             <FormGroup>
                               <label>Password</label>
                               <Input
+                                className="is_required"
                                 placeholder="Enter Password"
                                 type="password"
                                 onChange={e =>
@@ -431,7 +346,6 @@ class User extends React.Component {
                                 value={password}
                                 name="password"
                               />
-                              <FormFeedback>{error_password}</FormFeedback>
                             </FormGroup>
                           </Col>
                           <Col className="pl-1" md="4">
@@ -448,7 +362,6 @@ class User extends React.Component {
                                 value={firstname}
                                 name="firstname"
                               />
-                              <FormFeedback>{error_firstname}</FormFeedback>
                             </FormGroup>
                           </Col>
                         </Row>
@@ -463,11 +376,9 @@ class User extends React.Component {
                                 onChange={e =>
                                   this.setState({ lastname: e.target.value })
                                 }
-                                invalid={error_lastname ? true : false}
                                 value={lastname}
                                 name="lastname"
                               />
-                              <FormFeedback>{error_lastname}</FormFeedback>
                             </FormGroup>
                           </Col>
                           <Col className="px-1" md="4">
