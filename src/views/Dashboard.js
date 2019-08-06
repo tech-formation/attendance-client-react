@@ -19,7 +19,7 @@ import {
   dashboardNASDAQChart
 } from "variables/charts";
 
-class AddCompany extends React.Component {
+class Form extends React.Component {
   render() {
     return (
       <>
@@ -214,4 +214,4 @@ class AddCompany extends React.Component {
   }
 }
 
-export default AddCompany;
+export default Form;

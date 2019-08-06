@@ -1,7 +1,7 @@
-import AddCompany from "views/Companies/AddCompany"
+import Form from "views/Companies/form"
 import Dashboard from "views/Dashboard.js";
 import UserPage from "views/User.js";
-import  Companies from "views/Companies/Companies"
+import  Index from "views/Companies/index"
 
   var routes = [
     {
@@ -16,17 +16,17 @@ import  Companies from "views/Companies/Companies"
     },
     {
       path: "/companies",
-      component: Companies,
+      component: Index,
       layout: "/admin"
     },
     {
       path: "/company/add",
-      component: AddCompany,
+      component: Form,
       layout: "/admin"
     },
     {
       path: "/company/edit/:id",
-      component: AddCompany,
+      component: Form,
       layout: "/admin"
     },
     
