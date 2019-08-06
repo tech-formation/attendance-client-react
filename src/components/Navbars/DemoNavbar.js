@@ -4,6 +4,9 @@ import { getUser } from "modules/Users/selectors"
 import { connect } from "react-redux";
 import { setUser } from "modules/Users/actions";
 import { createStructuredSelector } from "reselect";
+import axios from "axios";
+import { GET_USER } from "config/endpoints";
+
 import {
   Collapse,
   Navbar,
@@ -61,6 +64,19 @@ class Header extends React.Component {
       this.props.history.push("/login");
   }
 
+  getUser = () => {
+    let userToken = localStorage.getItem("token");
+    axios
+      .get(GET_USER , { headers: { Authorization: `Bearer ${userToken}` } })
+      .then(findresponse => {
+          this.props.setUser(findresponse.data.user);
+      })
+      .catch(error => {
+        console.log(GET_USER);
+      });
+  };
+
+
   // getBrand() {
   //   let brandName = "Default Brand";
   //   routes.map((prop, key) => {
@@ -90,8 +106,7 @@ class Header extends React.Component {
   componentDidMount() {
     window.addEventListener("resize", this.updateColor.bind(this));
      var user =    JSON.parse(localStorage.getItem('user'));
-     //TODO: GET USER OBJECT FROM SERVER
-     this.props.setUser(user);
+     this.getUser();
   }
   componentDidUpdate(e) {
     if (

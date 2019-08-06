@@ -1,8 +1,7 @@
 import React from "react";
-import { GET_COMPANIES, DELETE_COMPANY } from "config/endpoints";
-import axios from "axios";
+import { GET_COMPANIES  , DELETE_COMPANY } from "config/endpoints";
 import { Link } from "react-router-dom";
-
+import { getCompanies, handleDelete } from "models/company";
 
 // reactstrap components
 import { Card, CardBody, CardTitle, Table, Row, Col, Button } from "reactstrap";
@@ -10,56 +9,21 @@ import { Card, CardBody, CardTitle, Table, Row, Col, Button } from "reactstrap";
 class Companies extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      value: "",
-      companies: [],
-      url: GET_COMPANIES,
-      search: "",
-      sort: "",
-      first_page: "",
-      last_page: ""
-    };
   }
+
+  state = {
+    value: "",
+    companies: [],
+    url: GET_COMPANIES,
+    search: "",
+    sort: "",
+    first_page: "",
+    last_page: ""
+  };
 
   componentDidMount() {
-    this.getCompanies(this.state.url);
+    getCompanies(this, this.state.url);
   }
-
-  getCompanies = prop => {
-    let userToken = localStorage.getItem("token");
-    axios
-      .get(prop, { headers: { Authorization: `Bearer ${userToken}` } })
-      .then(Response => Response)
-      .then(findresponse => {
-        this.setState({
-          companies: findresponse.data.data.data,
-          last_page: findresponse.data.data.last_page,
-          first_page: findresponse.data.data.from
-        });
-      })
-      .catch(error => {
-        console.log("Error fetching and parsing data", error);
-      });
-  };
-
-  handleDelete = id => {
-    let redirect = this.props;
-    let userToken = localStorage.getItem("token");
-    axios
-      .delete(DELETE_COMPANY + `${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      })
-      .then(Response => Response)
-      .then(findresponse => {
-        let url = `${GET_COMPANIES}`;
-        this.getCompanies(url);
-        redirect.history.push("/admin/companies");
-      })
-      .catch(error => {
-        console.log("Error fetching and parsing data", error);
-      });
-  };
 
   tableData() {
     return this.state.companies.map((object, i) => {
@@ -80,7 +44,7 @@ class Companies extends React.Component {
             &nbsp;
             <button
               className="btn btn-sm"
-              onClick={() => this.handleDelete(object.id)}
+              onClick={() => handleDelete(this, this.props,DELETE_COMPANY ,object.id)}
             >
               Delete
             </button>
@@ -97,7 +61,7 @@ class Companies extends React.Component {
     this.setState({
       url: url
     });
-    this.getCompanies(url);
+    getCompanies(this, url);
   };
 
   // Pagination
@@ -106,13 +70,13 @@ class Companies extends React.Component {
     this.setState({
       url: url
     });
-    this.getCompanies(url);
+    getCompanies(this, url);
   };
 
   // Sort
-  sortByName = prop => {
+  sortByName = () => {
     let url = `${GET_COMPANIES}?sf=${this.state.sort}&so=asc`;
-    this.getCompanies(url);
+    getCompanies(this, url);
   };
 
   render() {
@@ -140,10 +104,13 @@ class Companies extends React.Component {
           <Row>
             <Col md="12">
               <Card>
+
                 <CardTitle tag="h4" style={{ paddingLeft: 15 + "px" }}>
                   Companies
                 </CardTitle>
+
                 <Row style={{ paddingLeft: 15 + "px" }}>
+
                   <Col md="3" className="pr-0">
                     <label>Search</label>
                     <input
@@ -154,6 +121,7 @@ class Companies extends React.Component {
                       onChange={e => this.setState({ search: e.target.value })}
                     />
                   </Col>
+
                   <Col md="1" className="pl-0">
                     <label style={{ visibility: "hidden" }}>search</label>
                     <Button
@@ -188,6 +156,7 @@ class Companies extends React.Component {
                       </select>
                     </div>
                   </Col>
+
                   <Col md="2">
                     <label style={{ visibility: "hidden" }}>Sort By</label>
                     <Link to={`/admin/company/Add`}>
@@ -199,6 +168,7 @@ class Companies extends React.Component {
                 </Row>
 
                 <CardBody>
+
                   <Table responsive>
                     <thead className="text-primary">
                       <tr>
@@ -217,9 +187,11 @@ class Companies extends React.Component {
                     </thead>
                     <tbody className="text-center">{this.tableData()}</tbody>
                   </Table>
+                  
                   <ul className="pagination">
                     <li className="page-item">
                       <a className="page-link" href="#">
+                        {" "}
                         Prev
                       </a>
                     </li>

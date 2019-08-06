@@ -8,5 +8,6 @@ export const GET_COMPANIES = `${BASE_URL}/api/company`;
 export const REGISTER_COMPANY = `${BASE_URL}/api/register`;
 export const DELETE_COMPANY = `${BASE_URL}/api/company/`;
 export const EDIT_COMPANY = `${BASE_URL}/api/company/`;
+export const GET_USER = `${BASE_URL}/api/user`; 
 
 

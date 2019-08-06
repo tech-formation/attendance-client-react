@@ -1,7 +1,7 @@
 import React from "react";
 import { REGISTER_COMPANY, EDIT_COMPANY } from "config/endpoints.js";
-import axios from "axios";
 import states from "config/constants/states";
+import { saveCompany  , getCompany , updateCompany} from "models/company";
 
 // reactstrap components
 import {
@@ -50,41 +50,11 @@ class User extends React.Component {
   componentWillMount() {
     const { match } = this.props;
     const id = match.params.id;
-    this.getCompany(id);
+    getCompany(this, id , EDIT_COMPANY);
     this.checkCompanyId();
   }
 
-  getCompany = prop => {
-    let userToken = localStorage.getItem("token");
-    axios
-      .get(EDIT_COMPANY + prop, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      })
-      .then(Response => Response)
-      .then(findresponse => {
-        this.setState({
-          name: findresponse.data.data[0].name,
-          email: findresponse.data.data[0].email,
-          from_email: findresponse.data.data[0].from_email,
-          city: findresponse.data.data[0].city,
-          state_id: findresponse.data.data[0].state_id,
-          pincode: findresponse.data.data[0].pincode,
-          address: findresponse.data.data[0].address,
-          attendace_radius: findresponse.data.data[0].attendace_radius,
-          longitude: findresponse.data.data[0].longitude,
-          lattitude: findresponse.data.data[0].lattitude,
-          weekly_off_pattern: findresponse.data.data[0].weekly_off_pattern,
-          firstname: findresponse.data.data[0].firstname,
-          lastname: findresponse.data.data[0].lastname,
-          password: findresponse.data.data[0].password,
-          gender: findresponse.data.data[0].gender,
-          response: findresponse.data.data[0].response
-        });
-      })
-      .catch(error => {
-        console.log("Error fetching and parsing data", error);
-      });
-  };
+ 
 
   // form validations
   getValidationsErrors() {
@@ -151,53 +121,6 @@ class User extends React.Component {
     };
   }
 
-  // Save Data Method
-  saveCompany() {
-    let data = this.state;
-    let userToken = localStorage.getItem("token");
-    axios
-      .post(REGISTER_COMPANY, data, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      })
-      .then(res => {
-        this.setState({
-          response: res.data.status
-        });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-  }
-
-  // update Company
-  updateCompany() {
-    const id = this.props.match.params.id;
-    const data = new FormData();
-    data.append("name", this.state.name);
-    data.append("email", this.state.email);
-    data.append("from_email", this.state.from_email);
-    data.append("city", this.state.city);
-    data.append("state_id", this.state.state_id);
-    data.append("pincode", this.state.pincode);
-    data.append("address", this.state.address);
-    data.append("attendace_radius", this.state.attendace_radius);
-    data.append("weekly_off_pattern", this.state.weekly_off_pattern);
-    data.append("longitude", this.state.longitude);
-    data.append("lattitude", this.state.lattitude);
-    let userToken = localStorage.getItem("token");
-    axios
-      .post(EDIT_COMPANY + id, data, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      })
-      .then(res => {
-        this.setState({
-          response: res.data.status
-        });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-  }
 
   // handle submit
   handleSubmit = e => {
@@ -208,12 +131,12 @@ class User extends React.Component {
     this.setState({ is_submit: true });
     console.log(this.props.match.params.id);
     if (typeof this.props.match.params.id == "undefined") {
-      this.saveCompany();
+      saveCompany(this , this.state , REGISTER_COMPANY);
     } else {
-      this.updateCompany();
+      updateCompany(this , EDIT_COMPANY , this.props , this.state);
     }
   };
-
+  
   checkCompanyId = () => {
     let id;
     typeof this.props.match.params.id == "undefined"
