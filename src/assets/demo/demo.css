@@ -205,3 +205,12 @@
   outline: none;
   display: none;
 }
+
+#active a{
+  background-color:#2BA9CD;
+  color: white;
+  font-weight: 800;
+}
+.pagination{
+  padding-top: 10px;
+}

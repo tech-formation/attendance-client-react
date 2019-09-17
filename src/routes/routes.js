@@ -1,7 +1,9 @@
-import Form from "views/Companies/form"
+import Form from "views/Companies/form";
 import Dashboard from "views/Dashboard.js";
 import UserPage from "views/User.js";
-import  Index from "views/Companies/index"
+import Index from "views/Companies/index";
+import HolidayIndex from "views/Holidays/holidayIndex";
+import HolidayForm from "views/Holidays/holidayForm";
 
   var routes = [
     {
@@ -29,6 +31,21 @@ import  Index from "views/Companies/index"
       component: Form,
       layout: "/admin"
     },
+    {
+      path: "/holidays",
+      component: HolidayIndex,
+      layout: "/admin"
+    },
+    {
+      path: "/holiday/add",
+      component: HolidayForm,
+      layout: "/admin"
+    },
+    {
+      path: "/holiday/edit/:id",
+      component: HolidayForm,
+      layout: "/admin"
+    }
     
   ];
 

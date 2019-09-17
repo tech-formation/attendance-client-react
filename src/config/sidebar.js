@@ -15,7 +15,11 @@ var sidebar = [
     name: "Companies",
     icon: "nc-icon nc-tile-56",
   },  
- 
+  {
+    path:"/admin/holidays",
+    name: "Holidays",
+    icon: "nc-icon nc-tile-56",
+  }, 
   
 ];
 export default sidebar;
