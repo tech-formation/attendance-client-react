@@ -1,9 +1,8 @@
 import React from "react";
-import { ADD_HOLIDAY, EDIT_HOLIDAY } from "config/endpoints.js";
-import axios from "axios";
-import { serverValidations } from "config/validation";
+import { EDIT_HOLIDAY } from "config/endpoints.js";
 import { validations } from "config/validation";
 import DatePicker from "react-datepicker";
+import { saveHoliday, getEditHoliday, updateHoliday } from "models/holiday";
 import moment from "moment";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,8 +16,7 @@ import { Button, Card, CardBody, FormGroup, Form, Input, Row, Col, CardHeader, C
         name: "",
         date: new Date(),
         company_id: "",
-        type: 1,
-        act: 0,
+        type: 2,
         message:'',
         is_submit: false
       };
@@ -27,102 +25,28 @@ import { Button, Card, CardBody, FormGroup, Form, Input, Row, Col, CardHeader, C
     handleSubmit = (e) => {
       e.preventDefault();
       let formFields = e.target.elements;
-      this.setState({ is_submit: true });
       if (validations(e) === true) {
-        this.saveHoliday(formFields);
-      }
-    };
-
-    //save holiday
-    saveHoliday = (formFields) => {
-      let userToken = localStorage.getItem("token");
-      let companyId = localStorage.getItem("companyId");
-      const formattedDate = moment(this.state.date).format("YYYY-MM-DD");
-      this.setState({
-        company_id: localStorage.getItem("companyId"),
-        date: formattedDate,
-      }, function(){
-        //new holiday add
-        if(this.state.act === 0)
-        {
-          axios
-          .post(ADD_HOLIDAY, this.state, {
-            headers: { Authorization: `Bearer ${userToken}` }
-          })
-          .then(res => {
-            this.setState({
-              response: res.data.status,
-              message: res.data.message
-            });
-            serverValidations(res.data.message, formFields);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-        }
-        else
-        {
-          //update holiday
-          const { match } = this.props;
-          const id = match.params.id;
-          const data = new FormData();
-          data.append("name", this.state.name);
-          data.append("date", moment(this.state.date).format("YYYY-MM-DD"));
-          data.append("company_id", companyId);
-          axios
-            .post(EDIT_HOLIDAY + id, data, {
-              headers: { Authorization: `Bearer ${userToken}` }
-            })
-            .then(res => {
-              this.setState({
-                response: res.data.status,
-                message: res.data.message
-              });
-              serverValidations(res.data.message, formFields);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        }
-        //Clear state
         this.setState({
-          name: "",
-          date: "",
-          company_id: "",
-          act: 0,
-          is_submit: false
+          company_id : localStorage.getItem("companyId"),
+          date: moment(this.state.date).format("YYYY-MM-DD"),
+          is_submit : true
+        }, () => {
+            if (typeof this.props.match.params.id == "undefined") {
+              saveHoliday(this, this.state, formFields);
+            } else {
+              updateHoliday(this, this.props, this.state, formFields);
+            }
         });
-      });
+      }
     };
     
     componentDidMount() {
       const { match } = this.props;
       const id = match.params.id;
-      this.getEditHoliday(this, id, EDIT_HOLIDAY);
+      getEditHoliday(this, id, EDIT_HOLIDAY);
       this.checkHolidayId();
     };
 
-    //get data on edit record
-    getEditHoliday = (thisPar, id, url) => {
-      let userToken = localStorage.getItem("token");
-      axios
-        .get(url + id, {
-          headers: { Authorization: `Bearer ${userToken}` }
-        })
-        .then(Response => Response)
-        .then(findresponse => {
-          const formattedDate = new Date(findresponse.data.data[0].date);
-          thisPar.setState({
-            name: findresponse.data.data[0].name,
-            date: formattedDate,
-            company_id: findresponse.data.data[0].company_id,
-            act: 1
-          });
-        })
-        .catch(error => {
-          console.log("Error fetching and parsing data", error);
-        });
-    };
     //check for Add new holiday or update edited holiday
     checkHolidayId = () => {
       let id;
@@ -139,6 +63,11 @@ import { Button, Card, CardBody, FormGroup, Form, Input, Row, Col, CardHeader, C
         date: date
       });
     };
+
+	  //cancel function
+	  cancel = () => {
+	    this.props.history.push("/admin/holidays");
+	  }
     
     render() {
       
@@ -213,6 +142,12 @@ import { Button, Card, CardBody, FormGroup, Form, Input, Row, Col, CardHeader, C
                                 {this.checkHolidayId() === " "
                               ? "Add Holiday"
                               : "Update Holiday"}
+                              </Button>
+                              <Button
+                                className="btn-round"
+                                color="primary"
+                                onClick={ this.cancel }>
+                                  Cancel
                               </Button>
                             </div>
                           </Row>

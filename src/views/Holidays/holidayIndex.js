@@ -1,44 +1,10 @@
 import React from "react";
-import axios from "axios";
-import { GET_HOLIDAYS, DELETE_HOLIDAY } from "config/endpoints";
+import { GET_HOLIDAYS } from "config/endpoints";
 import { Link } from "react-router-dom";
+import { getholidays, deleteHoliday } from "models/holiday";
 
 // reactstrap components
 import { Card, CardBody, CardTitle, Table, Row, Col, Button } from "reactstrap";
-
-//Get Holidays
-export const getholidays = (thisPar, url) => {
-  let userToken = localStorage.getItem("token");
-  axios
-    .get(url, { headers: { Authorization: `Bearer ${userToken}` } })
-    .then(findresponse => {
-      thisPar.setState({
-        holidays : findresponse.data.data.data,
-        last_page: findresponse.data.data.last_page,
-        first_page: findresponse.data.data.from,
-        currentPage: findresponse.data.data.current_page
-      });
-    })
-    .catch(error => {
-      console.log("Error fetching and parsing data", error);
-    });
-};
-
-//delete Holiday
-const deleteHoliday = (thisPar, id) => {
-  let userToken = localStorage.getItem("token");
-  axios
-  .delete(DELETE_HOLIDAY + `${id}`, {
-    headers: { Authorization: `Bearer ${userToken}` }
-  })
-  .then(Response => {
-    getholidays(thisPar, GET_HOLIDAYS);
-    this.history.push("/admin/holidays");
-  })
-  .catch(error => {
-    console.log("Error fetching and parsing data", error);
-  });
-};
 
 class Holidays extends React.Component {
       
@@ -56,33 +22,33 @@ class Holidays extends React.Component {
     getholidays(this, this.state.url);
   };
 
-    tableData() {
-      return this.state.holidays.map((object, i) => {
-        return (
-          <tr key={object.id}>
-            <td>{object.id}</td>
-            <td>{object.name}</td>
-            <td>{object.date}</td>
-            <td>{object.year}</td>
-            <td>
-            <Link
-              className="btn btn-sm"
-               to={`/admin/holiday/edit/${object.id}`}
-            >
-              Edit
-            </Link>
-            &nbsp;
-            <button
-              className="btn btn-sm"
-              onClick={() => deleteHoliday(this, object.id)}
-            >
-              Delete
-            </button>
-          </td>
-          </tr>
-        );
-      });
-    }
+  tableData() {
+    return this.state.holidays.map((object, i) => {
+      return (
+        <tr key={object.id}>
+          <td>{object.id}</td>
+          <td>{object.name}</td>
+          <td>{object.date}</td>
+          <td>{object.year}</td>
+          <td>
+          <Link
+            className="btn btn-sm"
+              to={`/admin/holiday/edit/${object.id}`}
+          >
+            Edit
+          </Link>
+          &nbsp;
+          <button
+            className="btn btn-sm"
+            onClick={() => { if (window.confirm('Are you sure you wish to delete this record?')) deleteHoliday(this, this.props, object.id) } } 
+          >
+            Delete
+          </button>
+        </td>
+        </tr>
+      );
+    });
+  }
   
     //search
   searchHoliday = () => {
@@ -169,7 +135,7 @@ class Holidays extends React.Component {
                       Search
                     </Button>
                   </Col>
-                <Col md="6">
+                <Col md="4">
                   <div className="form-group from-left">
                     <select
                       className="form-control w-50 "
